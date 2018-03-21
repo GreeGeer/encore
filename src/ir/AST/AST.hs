@@ -584,6 +584,10 @@ data Expr = Skip {emeta :: Meta Expr}
                          target :: Expr,
                          name :: Name,
                          args :: Arguments}
+          | Atomic {emeta :: Meta Expr,
+                    target :: Expr,
+                    name :: Name,
+                    body :: Expr}
           | Optional {emeta :: Meta Expr,
                       optTag :: OptionalPathComponent}
           | ExtractorPattern {emeta :: Meta Expr,
