@@ -187,6 +187,7 @@ reservedNames =
     ,"END"
     ,"active"
     ,"and"
+    ,"atomic"
     ,"bool"
     ,"break"
     ,"borrow"
@@ -999,6 +1000,7 @@ expr = notFollowedBy nl >>
      <|> match
      <|> borrow
      <|> blockedTask
+     <|> atomic
      <|> for
      <|> while
      <|> repeat
@@ -1341,6 +1343,15 @@ expr = notFollowedBy nl >>
         cond <- expression
         reserved "then"
         return $ \thn -> Unless{emeta, cond, thn}
+
+      atomic = blockedConstruct $ do
+        emeta <- buildMeta
+        reserved "atomic"
+        target <- expression
+        reserved "as"
+        name <- Name <$> identifier
+        reserved "do"
+        return $ \body -> Atomic{emeta, target, name, body}
 
       for = blockedConstruct $ do
         emeta <- buildMeta
