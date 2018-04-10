@@ -13,7 +13,6 @@ all: encorec
 
 typecheck:
 	cabal build --ghc-option=-fno-code
-	#stack build --ghc-options=“-fno-code”
 
 encorec: dirs pony stack-setup
 	export ENCORE_MODULES="$(CURDIR)/modules/" && \
