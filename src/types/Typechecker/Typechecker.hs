@@ -1666,6 +1666,13 @@ instance Checkable Expr where
                                         ,stop = eStop
                                         ,step = eStep}
 
+    doTypeCheck atomic@(Atomic {emeta, target, name, body}) = do
+      eTarget <- typecheck target
+      let targetTy = AST.getType eTarget
+      eBody <- typecheck body
+      bodyTyped <- typecheckBody elementType body
+      return $ setType bodyTy atomic{target = eTarget, body = eBody}
+
     --  E |- rng : Range
     --  E, x : int |- e : ty
     -- --------------------------
