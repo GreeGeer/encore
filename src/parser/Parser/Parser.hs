@@ -998,9 +998,9 @@ expr = notFollowedBy nl >>
      <|> continue
      <|> closure
      <|> match
+     <|> atomic
      <|> borrow
      <|> blockedTask
-     <|> atomic
      <|> for
      <|> while
      <|> repeat
@@ -1344,15 +1344,6 @@ expr = notFollowedBy nl >>
         reserved "then"
         return $ \thn -> Unless{emeta, cond, thn}
 
-      atomic = blockedConstruct $ do
-        emeta <- buildMeta
-        reserved "atomic"
-        target <- expression
-        reserved "as"
-        name <- Name <$> identifier
-        reserved "do"
-        return $ \body -> Atomic{emeta, target, name, body}
-
       for = blockedConstruct $ do
         emeta <- buildMeta
         reserved "for"
@@ -1392,6 +1383,15 @@ expr = notFollowedBy nl >>
         atLevel indent $ reserved "end"
         returnWithEnd theMatch
 
+      atomic = blockedConstruct $ do
+        emeta <- buildMeta
+        reserved "atomic"
+        target <- expression
+        reserved "as"
+        name <- Name <$> identifier
+        reserved "do"
+        return $ \body -> Atomic{emeta, target, name, body}
+      
       borrow = blockedConstruct $ do
         emeta <- buildMeta
         reserved "borrow"
