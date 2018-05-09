@@ -1256,6 +1256,34 @@ instance Checkable Expr where
         handleBurying _ (TCError err bt) =
           throwError $ TCError err bt
 
+    doTypecheck atomic@(Atomic{target, name, body}) = do
+      eTarget <- typecheck target
+      let targetType   = AST.getType eTarget
+          atomicType = makeStackbound targetType
+          eTarget'     = setType atomicType eTarget
+      targetIsLinear <- isLinearType targetType
+      let root         = findRoot target
+          atomicEnv    =
+            (case root of
+               VarAccess{qname} ->
+                 if targetIsLinear
+                 then dropLocal (qnlocal qname)
+                 else id
+               _ -> id) . extendEnvironmentImmutable [(name, atomicType)]
+      eBody <- local atomicEnv $ typecheck body
+               `catchError` handleBurying root
+      let bodyTy = AST.getType eBody
+      return $ setType bodyTy atomic{target = eTarget', body = eBody}
+      where
+        handleBurying :: Expr -> TCError -> TypecheckM Expr
+        handleBurying VarAccess{qname}
+                      (TCError err@(UnboundVariableError unbound) bt) =
+          if unbound == qname
+          then throwError $ TCError (BuriedVariableError qname) bt
+          else throwError $ TCError err bt
+        handleBurying _ (TCError err bt) =
+          throwError $ TCError err bt
+
     --  E |- cond : bool
     --  E |- body : t
     -- -----------------------
@@ -1665,13 +1693,6 @@ instance Checkable Expr where
         return $ setType rangeType range{start = eStart
                                         ,stop = eStop
                                         ,step = eStep}
-
-    doTypeCheck atomic@(Atomic {emeta, target, name, body}) = do
-      eTarget <- typecheck target
-      let targetTy = AST.getType eTarget
-      eBody <- typecheck body
-      bodyTyped <- typecheckBody elementType body
-      return $ setType bodyTy atomic{target = eTarget, body = eBody}
 
     --  E |- rng : Range
     --  E, x : int |- e : ty
