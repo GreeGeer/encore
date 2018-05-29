@@ -389,9 +389,6 @@ assertNoDuplicateBorrow args paramTypes = do
           isStackboundType ty
       isBorrowed _ = False
 
-matchAtomic :: Type -> Type -> TypecheckM ()
-matchAtomic ty expected
-
 matchStackBoundedness :: Type -> Type -> TypecheckM ()
 matchStackBoundedness ty expected
     |  isStackboundType expected &&
