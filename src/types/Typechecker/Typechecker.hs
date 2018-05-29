@@ -1231,7 +1231,7 @@ instance Checkable Expr where
     doTypecheck atomic@(Atomic{target, name, body}) = do
       eTarget <- typecheck target
       let targetType   = AST.getType eTarget
-          atomicType = makeStackbound targetType
+          atomicType = makeAtomic targetType
           eTarget'     = setType atomicType eTarget
       targetIsLinear <- isLinearType targetType
       let root         = findRoot target
