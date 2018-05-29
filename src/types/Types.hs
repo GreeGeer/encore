@@ -130,6 +130,8 @@ module Types(
             ,isReadSingleType
             ,isSubordinateSingleType
             ,isUnsafeSingleType
+            ,isAtomicType
+            ,makeAtomic
             ,makeStackbound
             ,isStackboundType
             ) where
@@ -258,11 +260,13 @@ instance Show VarInfo where
   show t@VarInfo{tmode = Nothing, tident} = tident
   show t@VarInfo{tmode = Just m} = show m ++ " " ++ show t{tmode = Nothing}
 
-
-data Box = Stackbound deriving(Eq)
+data Box = Stackbound
+         | Atomic
+         deriving(Eq)
 
 instance Show Box where
     show Stackbound = "borrowed"
+    show Atomic = "atomic"
 
 data Type = Type {inner :: InnerType
                  ,box   :: Maybe Box}
@@ -889,6 +893,9 @@ incapability = typ EmptyCapability
 
 isIncapability Type{inner = EmptyCapability} = True
 isIncapability _ = False
+
+isAtomicType ty = box ty == Just Atomic
+makeAtomic ty = ty{box = Just Atomic}
 
 isStackboundType ty = box ty == Just Stackbound
 makeStackbound ty = ty{box = Just Stackbound}
