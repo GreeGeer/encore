@@ -67,6 +67,8 @@ typedef enum {
 } encore_type_id;
 
 typedef enum {
+  _ENC__MSG_ATOMIC_INIT,
+  _ENC__MSG_ATOMIC_END,
   _ENC__MSG_RESUME_GET, /// This should probably go
   _ENC__MSG_RESUME_SUSPEND,
   _ENC__MSG_RESUME_AWAIT,
@@ -77,6 +79,8 @@ typedef enum {
 struct encore_oneway_msg
 {
   struct pony_msg_t pad;
+  bool atomic_msg;
+  bool atomic_msg_handled;
 };
 
 #include "future.h"
