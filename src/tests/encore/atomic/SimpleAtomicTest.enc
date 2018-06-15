@@ -12,6 +12,7 @@ active class Foo
     this.i = newInt
   end
 
+  -- Utöka actors till att ha denna metod OMM typen är ATOMIC
   def atomicMsgStop() : unit
     ()
   end
