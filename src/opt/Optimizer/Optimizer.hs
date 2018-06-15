@@ -49,7 +49,7 @@ optimizeProgram p@(Program{classes, traits, functions}) =
 -- | The functions in this list will be performed in order during optimization
 optimizerPasses :: [Expr -> Expr]
 optimizerPasses = [constantFolding, sugarPrintedStrings, tupleMaybeIdComparison,
-                   dropBorrowBlocks, forwardGeneral]
+                   dropAtomicBlocks, dropBorrowBlocks, forwardGeneral]
 
 -- Note that this is not intended as a serious optimization, but
 -- as an example to how an optimization could be made. As soon as
@@ -138,6 +138,18 @@ sugarPrintedStrings = extend sugarPrintedString
         , Just sugared@StringLiteral{} <- getSugared arg
           = setType stringType sugared
         | otherwise = arg
+
+dropAtomicBlocks = extend dropAtomicBlock
+    where
+      dropAtomicBlock e@Atomic{emeta, name, src, body} =
+        Let{emeta
+           ,mutability = Val
+           ,decls = [([VarNoType name], src)]
+           ,body = Seq emeta [atomicMsgStart, body, atomicMsgStop]}
+        where
+          atomicMsgStart = MessageSend emeta [] src (Name "atomicMsgStart") []
+          atomicMsgStop = MessageSend emeta [] src (Name "atomicMsgStop") []
+      dropAtomicBlock e = e
 
 dropBorrowBlocks = extend dropBorrowBlock
     where
