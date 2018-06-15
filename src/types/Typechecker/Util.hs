@@ -319,6 +319,8 @@ checkTypeArgumentBounds params args =
 
 subtypeOf :: Type -> Type -> TypecheckM Bool
 subtypeOf sub super
+    | isAtomicType sub =
+        liftM (isAtomicType super &&) $ unbox sub `subtypeOf` unbox super
     | isStackboundType sub =
         liftM (isStackboundType super &&) $ unbox sub `subtypeOf` unbox super
     | isArrowType sub && isArrowType super = do
