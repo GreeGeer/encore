@@ -96,9 +96,9 @@ pony_msg_t* ponyint_messageq_pop(messageq_t* q)
   return next;
 }
 
-pony_msg_t* ponyint_messageq_peek(messageq_t* msg)
+pony_msg_t* ponyint_messageq_peek(messageq_t* q)
 {
-  return atomic_load_explicit(&msg->tail->next, memory_order_relaxed);
+  return (pony_msg_t*)q->tail->next;
 }
 
 bool ponyint_messageq_markempty(messageq_t* q)

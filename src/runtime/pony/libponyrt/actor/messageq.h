@@ -10,6 +10,7 @@ typedef struct messageq_t
 {
   PONY_ATOMIC(pony_msg_t*) head;
   pony_msg_t* tail;
+  pony_msg_t* atomic_cursor;
 } messageq_t;
 
 void ponyint_messageq_init(messageq_t* q);
@@ -20,7 +21,7 @@ bool ponyint_messageq_push(messageq_t* q, pony_msg_t* m);
 
 pony_msg_t* ponyint_messageq_pop(messageq_t* q);
 
-pony_msg_t* ponyint_messageq_peek(messageq_t* msg);
+pony_msg_t* ponyint_messageq_peek(messageq_t* q);
 
 bool ponyint_messageq_markempty(messageq_t* q);
 
