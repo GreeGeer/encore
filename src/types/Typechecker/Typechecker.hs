@@ -1228,24 +1228,24 @@ instance Checkable Expr where
                           ,mchandler = eHandler
                           ,mcguard = eGuard}
 
-    doTypecheck atomic@(Atomic{target, name, body}) = do
-      eTarget <- typecheck target
-      let targetType   = AST.getType eTarget
-          atomicType = makeAtomic targetType
-          eTarget'     = setType atomicType eTarget
-      targetIsLinear <- isLinearType targetType
-      let root         = findRoot target
+    doTypecheck atomic@(Atomic{src, name, body}) = do
+      eSrc <- typecheck src
+      let srcType   = AST.getType eSrc
+          atomicType   = makeAtomic $ makeStackbound srcType
+          eSrc'     = setType atomicType eSrc
+      srcIsLinear <- isLinearType srcType
+      let root         = findRoot src
           atomicEnv    =
             (case root of
                VarAccess{qname} ->
-                 if targetIsLinear
+                 if srcIsLinear
                  then dropLocal (qnlocal qname)
                  else id
                _ -> id) . extendEnvironmentImmutable [(name, atomicType)]
       eBody <- local atomicEnv $ typecheck body
                `catchError` handleBurying root
       let bodyTy = AST.getType eBody
-      return $ setType bodyTy atomic{target = eTarget', body = eBody}
+      return $ setType bodyTy atomic{src = eSrc', body = eBody}
       where
         handleBurying :: Expr -> TCError -> TypecheckM Expr
         handleBurying VarAccess{qname}
