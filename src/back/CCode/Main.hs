@@ -84,6 +84,7 @@ data CCode a where
     Embed        :: String -> CCode a
     EmbedC       :: CCode a -> CCode b
     Call         :: (UsableAs e1 Expr, UsableAs e2 Expr) => CCode e1 -> [CCode e2] -> CCode Expr
+    AtomicCall   :: (UsableAs e1 Expr, UsableAs e2 Expr) => CCode e1 -> [CCode e2] -> CCode Expr
     Typedef      :: CCode Ty -> CCode Name -> CCode Toplevel
     Sizeof       :: CCode Ty -> CCode Expr
     FunTypeDef   :: CCode Name -> CCode Ty -> [CCode Ty] -> CCode Toplevel
