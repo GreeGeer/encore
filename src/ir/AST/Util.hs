@@ -99,7 +99,7 @@ getChildren Match {arg, clauses} = arg:getChildrenClauses clauses
 
     getChildrenClause MatchClause {mcpattern, mchandler, mcguard} =
         [mcpattern, mchandler, mcguard]
-getChildren Atomic {target, body} = [target, body]
+getChildren Atomic {src, body} = [src, body]
 getChildren Borrow {target, body} = [target, body]
 getChildren Get {val} = [val]
 getChildren Forward {forwardExpr} = [forwardExpr]
@@ -181,7 +181,7 @@ putChildren (arg:clauseList) e@(Match {clauses}) =
                 putClausesChildren rest rClauses
           putClausesChildren _ _ =
               error "Util.hs: Wrong number of children of of match clause"
-putChildren [target, body] e@(Atomic {}) = e{target, body}
+putChildren [src, body] e@(Atomic {}) = e{src, body}
 putChildren [target, body] e@(Borrow {}) = e{target, body}
 putChildren [val] e@(Get {}) = e{val = val}
 putChildren [forwardExpr] e@(Forward {}) = e{forwardExpr = forwardExpr}

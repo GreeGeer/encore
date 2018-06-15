@@ -277,8 +277,8 @@ ppExpr MessageSend {target, name, args, typeArguments} =
     maybeParens target <> "!" <> ppName name <>
       withTypeArguments typeArguments <>
       parens (commaSep (map ppExpr args))
-ppExpr Atomic {target, name, body} =
-  "atomic" <+> ppExpr target <+> "as" <+> ppName name <+> "do" $+$
+ppExpr Atomic {name, src, body} =
+  "atomic" <+> ppName name <+> "as" <+> ppExpr src <+> "do" $+$
     indent (ppBody body) $+$
   "end"
 ppExpr PartySeq {par, seqfunc} = ppExpr par <+> ">>" <+> parens (ppExpr seqfunc)

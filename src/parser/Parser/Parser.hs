@@ -1386,12 +1386,12 @@ expr = notFollowedBy nl >>
       atomic = blockedConstruct $ do
         emeta <- buildMeta
         reserved "atomic"
-        target <- expression
-        reserved "as"
         name <- Name <$> identifier
+        reserved "as"
+        src <- expression
         reserved "do"
-        return $ \body -> Atomic{emeta, target, name, body}
-      
+        return $ \body -> Atomic{emeta, name, src, body}
+
       borrow = blockedConstruct $ do
         emeta <- buildMeta
         reserved "borrow"
