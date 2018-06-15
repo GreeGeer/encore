@@ -1,0 +1,35 @@
+active class Foo
+  var i : int
+  def init() : unit
+    this.i = 0
+  end
+
+  def printInt() : unit
+    println("My value: {}", this.i)
+  end
+
+  def setInt(newInt : int) : unit
+    this.i = newInt
+  end
+
+  def atomicMsgStop() : unit
+    ()
+  end
+ 
+  def atomicMsgStart() : unit
+    ()
+  end
+    
+end
+
+active class Main
+  def main() : unit
+    val f = new Foo()
+    -- val bar = f
+    -- f ! printInt()
+    atomic bar as f do
+      bar ! setInt(13)
+    end
+    -- f ! printInt()
+  end
+end
