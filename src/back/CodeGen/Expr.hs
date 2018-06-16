@@ -1395,7 +1395,7 @@ callTheMethodForName'
   (tmpType, tmpTypeDecl) <- tmpArr (Ptr ponyTypeT) runtimeTypes
   let runtimeTypeVar = if null runtimeTypes then nullVar else tmpType
   return (initArgs ++ [tmpTypeDecl],
-           Call cMethodName $
+           (if Ty.isAtomicType targetType then AtomicCall else Call) cMethodName $
              map AsExpr [encoreCtxVar, targetName, runtimeTypeVar] ++
              doCast (map A.ptype (A.hparams header)) args' ++
              map AsExpr extraArguments
@@ -1464,7 +1464,7 @@ traitMethod idFun this targetType name typeargs args resultType =
           ,initVtable this vtable
           ,initF f vtable id
           ,tmpTypeDecl
-          ,ret tmp $ callF f this args tmpType'
+          ,ret tmp $ (if (Ty.isAtomicType targetType) then callAF else callF) f this args tmpType'
           ]
         )
   where
@@ -1476,6 +1476,8 @@ traitMethod idFun this targetType name typeargs args resultType =
     initVtable this v = Assign (Var v) $ Cast (Ptr void) $ vtable this
     initF f vtable id = Assign (Var f) $ Call (Nam vtable) [id]
     callF f this args typeArgs = Call (Nam f) $ AsExpr encoreCtxVar : Cast capability this :
+                                       AsExpr typeArgs : map AsExpr args
+    callAF f this args typeArgs = AtomicCall (Nam f) $ AsExpr encoreCtxVar : Cast capability this :
                                        AsExpr typeArgs : map AsExpr args
     ret tmp fcall = Assign (Decl (resultType, Var tmp)) fcall
 

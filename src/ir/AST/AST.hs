@@ -657,6 +657,10 @@ data Expr = Skip {emeta :: Meta Expr}
           | Match {emeta :: Meta Expr,
                    arg :: Expr,
                    clauses :: [MatchClause]}
+          | Atomic {emeta  :: Meta Expr,
+                    name   :: Name,
+                    src     :: Expr,
+                    body   :: Expr}
           | Borrow {emeta  :: Meta Expr,
                     target :: Expr,
                     name   :: Name,
