@@ -22,3 +22,15 @@ end
 fun id[a](x : a) : a
   x
 end
+
+-- This function should ultimately not be exposed at the surface level
+fun atomicStart[a](x : a) : unit
+  -- Here you can write C coode that sends the proper START message to x
+  println("{} enters an atomic block")
+end
+
+-- This function should ultimately not be exposed at the surface level
+fun atomicStop[a](x : a) : unit
+  -- Here you can write C coode that sends the proper STOP message to x
+  println("{} exits an atomic block -- not this is printed synchronously so will likely arrive out of order")
+end

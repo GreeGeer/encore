@@ -372,6 +372,10 @@ ppExpr Match {arg, clauses} =
           indent (ppBody mchandler) $+$
         "end"
       ppMatchClauses = foldr (($+$) . indent . ppClause) ""
+ppExpr Atomic {name, src, body} =
+    "atomic" <+> ppName name <+> "<-" <+> ppExpr src <+> "in" $+$
+      indent (ppBody body) $+$
+    "end"
 ppExpr Borrow {target, name, body} =
     "borrow" <+> ppExpr target <+> "as" <+> ppName name <+> "in" $+$
       indent (ppBody body) $+$

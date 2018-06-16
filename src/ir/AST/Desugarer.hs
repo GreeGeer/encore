@@ -458,8 +458,18 @@ desugar f@FunctionCall{emeta, qname = QName{qnlocal = Name "Just"}
                       ,args = [arg]} =
   MaybeValue{emeta, mdt = JustData arg}
 
-
-
+desugar a@Atomic{emeta, name, src, body} =
+  Let{emeta
+     ,mutability=Val
+     ,decls = [([VarNoType tmpNam], src)]
+     ,body=a{body=Seq emeta [atomicDelimiter "atomicStart", body, atomicDelimiter "atomicStop"]}}
+  where
+    tmpNam = Name "_tmp"
+    atomicDelimiter fName = FunctionCall{emeta
+                                        ,typeArguments=[]
+                                        ,qname=qLocal $ Name fName
+                                        ,args=[VarAccess{emeta, qname = qLocal tmpNam}]}
+  
 desugar e = e
 
 assertionFailed emeta assert =

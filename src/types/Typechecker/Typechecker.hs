@@ -1228,6 +1228,17 @@ instance Checkable Expr where
                           ,mchandler = eHandler
                           ,mcguard = eGuard}
 
+    -- TODO: don't need to do all that crap (copied from borrow)
+    doTypecheck atomic@(Atomic{name, src, body}) = do
+      eTarget <- typecheck src
+      let targetType   = AST.getType eTarget
+          atomicType   = makeAtomic targetType
+          eTarget'     = setType atomicType eTarget
+          atomicEnv    = local (extendEnvironmentImmutable [(name, atomicType)]) 
+      eBody <- atomicEnv $ typecheck body
+      let bodyTy = AST.getType eBody
+      return $ setType bodyTy atomic{src = eTarget, body = eBody}
+
     doTypecheck borrow@(Borrow{target, name, body}) = do
       eTarget <- typecheck target
       let targetType   = AST.getType eTarget
